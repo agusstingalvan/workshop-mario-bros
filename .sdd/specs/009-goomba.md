@@ -21,7 +21,7 @@ El Goomba es el enemigo básico y el que enseña la regla central de plataformas
 
 ## Related GDD or design reference
 
-- §2.4. Goomba y Goomba aplastado (frames `[11, 12]` → `(48, 24, 24, 24)` y `(72, 24, 24, 24)`, `goomba_walk` 8 fps, hitbox `16 × 14`, origen `(0.5, 1)`)
+- §2.4. Goomba y Goomba aplastado (frames `[18, 19, 20]` → `(0, 48, 24, 24)`, `(24, 48, 24, 24)` y `(48, 48, 24, 24)`, `goomba_walk` 8 fps, hitbox `16 × 14`, origen `(0.5, 1)`; asset `crawler_blue`)
 - §6.1. Goomba
 - §8.2. Vidas
 

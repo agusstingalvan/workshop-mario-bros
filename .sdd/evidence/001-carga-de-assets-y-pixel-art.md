@@ -21,6 +21,7 @@ Resultado: spec 001 implementada y verificada. Las hojas se sirven desde `public
 Decisiones tomadas en revisión:
 - `bg.png` y `logo.png` se conservan en `public/assets/` para el futuro menú, pero la escena base ya no los carga.
 - La escena de validación usa escala entera ×4.
+- El Goomba usa `crawler_blue` frames `[18, 19, 20]` como ciclo de caminata (8 fps) y el frame `18` para el estado aplastado; se actualizaron `docs/GDD.md` §2.4/§6.1/§10, la spec 009 y `src/game/constants/assets.js`.
 
 Limitaciones:
 - No hubo playtest manual humano; la verificación visual se hizo sobre una captura headless de Chrome.

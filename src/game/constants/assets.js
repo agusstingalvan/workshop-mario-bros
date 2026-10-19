@@ -95,7 +95,7 @@ export const CHARACTERS = Object.freeze({
     SUPER_MARIO: character({ frames: [0, 1], hitbox: HITBOXES.MARIO_SUPER, scale: 1.5 }),
     MARIO_IDLE: character({ frames: [0], hitbox: HITBOXES.MARIO_SMALL }),
     MARIO_JUMP: character({ frames: [1], hitbox: HITBOXES.MARIO_SMALL }),
-    GOOMBA: character({ frames: [11, 12], hitbox: HITBOXES.GOOMBA }),
-    GOOMBA_FLATTENED: character({ frames: [11], hitbox: HITBOXES.GOOMBA }),
+    GOOMBA: character({ frames: [18, 19, 20], hitbox: HITBOXES.GOOMBA }),
+    GOOMBA_FLATTENED: character({ frames: [18], hitbox: HITBOXES.GOOMBA }),
     PIRANHA_PLANT: character({ sheet: null, frames: [], hitbox: HITBOXES.PIRANHA_PLANT })
 });

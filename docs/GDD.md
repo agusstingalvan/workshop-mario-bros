@@ -72,8 +72,8 @@ El índice de frame en Phaser coincide con el índice de celda de este documento
 | Super Mario | `tilemap-characters_packed.png` | `[0, 1]` | ídem | `mario_walk`, 10 fps, loop, `scale 1.5` | `(0.5, 1)` | 20 × 26 |
 | Mario quieto / salto / caída | `tilemap-characters_packed.png` | `[0]` (quieto) · `[1]` (salto y caída) | ídem | frame congelado, sin animación propia | `(0.5, 1)` | — |
 | Mario con daño | — | — | — | parpadeo por alpha, sin frames propios | — | — |
-| Goomba | `tilemap-characters_packed.png` | `[11, 12]` | `(48, 24, 24, 24)` · `(72, 24, 24, 24)` | `goomba_walk`, 8 fps, loop | `(0.5, 1)` | 16 × 14 |
-| Goomba aplastado | `tilemap-characters_packed.png` | `[11]` | `(48, 24, 24, 24)` | frame congelado + `scaleY 0.3` durante 100 ms, luego se destruye | `(0.5, 1)` | — |
+| Goomba | `tilemap-characters_packed.png` | `[18, 19, 20]` | `(0, 48, 24, 24)` · `(24, 48, 24, 24)` · `(48, 48, 24, 24)` | `goomba_walk`, 8 fps, loop | `(0.5, 1)` | 16 × 14 |
+| Goomba aplastado | `tilemap-characters_packed.png` | `[18]` | `(0, 48, 24, 24)` | frame congelado + `scaleY 0.3` durante 100 ms, luego se destruye | `(0.5, 1)` | — |
 | Piranha Plant | **sin asset** | — | — | textura generada por geometría (ver 2.6) | `(0.5, 1)` | 12 × 10 |
 
 El pack no incluye animaciones de reposo, salto, daño ni muerte: se resuelven con frame congelado o tween, nunca con frames inexistentes.
@@ -323,7 +323,7 @@ La Piranha Plant es un enemigo que vive dentro de las tuberías.
 * Mario no puede derrotarla saltando sobre ella.  
 * Debe esquivarla y esperar el momento adecuado para pasar.
 
-> **Assets:** Goomba = `box_enemy`, frames `[11, 12]` → `(48, 24, 24, 24)` y `(72, 24, 24, 24)`, 8 fps, hitbox `16 × 14`. Piranha Plant = sin asset, `piranha_open` / `piranha_closed` generadas por geometría. Ver §2.4 y §2.6.
+> **Assets:** Goomba = `crawler_blue`, frames `[18, 19, 20]` → `(0, 48, 24, 24)`, `(24, 48, 24, 24)` y `(48, 48, 24, 24)`, 8 fps, hitbox `16 × 14`. Piranha Plant = sin asset, `piranha_open` / `piranha_closed` generadas por geometría. Ver §2.4 y §2.6.
 
 ## **7\. Elementos del escenario**
 
@@ -430,7 +430,7 @@ A medida que avance encontrará bloques, enemigos y obstáculos que deberá supe
 
 Finalmente llegará al Goal Pole que marca el final del nivel.
 
-> **Assets del nivel:** tiles `0–3`/`20–23` (pasto), `120–123`/`140–143` (tierra), `40–43`/`60–63` (plataformas), `12–15` (plataforma roja), `11` (hard), `10` (?), `9` (vacío), `29` (ladrillo), `151` (moneda), `128` (hongo), `95`+`115` (tubería), `32`/`52`/`72`+`85` (meta), `153–156` (nubes). Enemigos: frames `[11, 12]` y Piranha generada. Ver §2.4–2.6.
+> **Assets del nivel:** tiles `0–3`/`20–23` (pasto), `120–123`/`140–143` (tierra), `40–43`/`60–63` (plataformas), `12–15` (plataforma roja), `11` (hard), `10` (?), `9` (vacío), `29` (ladrillo), `151` (moneda), `128` (hongo), `95`+`115` (tubería), `32`/`52`/`72`+`85` (meta), `153–156` (nubes). Enemigos: frames `[18, 19, 20]` (Goomba) y Piranha generada. Ver §2.4–2.6.
 
 ## **11\. Pantallas del juego**
 
