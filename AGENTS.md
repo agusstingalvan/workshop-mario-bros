@@ -69,7 +69,8 @@ Reglas:
 - Un cambio revisable = una spec.
 - Los cambios triviales sin impacto en comportamiento (typos, documentación) pueden omitir el ciclo; cualquier cambio de comportamiento requiere spec.
 - Si el GDD y el pedido difieren, detenerse y resolver la ambigüedad antes de codificar.
-- Skills locales disponibles: `.opencode/skills/sdd-spec`, `.opencode/skills/sdd-plan` y `.opencode/skills/verify`.
+- Skills locales disponibles: `.opencode/skills/sdd-spec`, `.opencode/skills/sdd-plan`, `.opencode/skills/gdd-to-sdd` y `.opencode/skills/verify`.
+- Para convertir el GDD en specs o revisar su alineación, usar `.opencode/skills/gdd-to-sdd` y el reporte `.sdd/templates/gdd-alignment-report.md`.
 
 ## Buenas prácticas de POO
 

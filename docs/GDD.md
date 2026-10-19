@@ -41,7 +41,7 @@ Los personajes y objetos conservarán sus nombres del juego de Mario, pero tendr
 | `assets/tilemap_packed.png` | 18 × 18 px | 20 × 9 | 180 | Escenario, bloques, objetos, decoración y fuente de dígitos |
 | `assets/tilemap-characters_packed.png` | 24 × 24 px | 9 × 3 | 27 | Personajes y enemigos |
 
-Ambas hojas están empaquetadas: **margen 0 px y separación 0 px** entre celdas. El catálogo completo de cada celda está en `assets/TILEMAP_PACKED.md` (escenario) y `assets/CORTE_TILES_Y_ANIMACIONES.md` (personajes y reglas de corte).
+Ambas hojas están empaquetadas: **margen 0 px y separación 0 px** entre celdas.
 
 ### **2.2. Convención de referencia**
 
