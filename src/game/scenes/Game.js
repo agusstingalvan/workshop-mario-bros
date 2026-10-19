@@ -1,9 +1,20 @@
 import { Scene } from 'phaser';
-import { CHARACTERS, TEXTURES, TILES } from '../constants/assets.js';
+import { CHARACTERS } from '../constants/assets.js';
+import { GAME_STATE_KEY } from '../state/GameState.js';
 
-const PREVIEW_SCALE = 4;
-const PREVIEW_BASELINE = 500;
+const SKY_COLOR = 0x5c94fc;
+const GROUND_COLOR = 0x8b5a2b;
+const GROUND_Y = 700;
+const GROUND_HEIGHT = 16;
+const LEVEL_SCALE = 2;
+const START_POINT = Object.freeze({ x: 120, y: GROUND_Y - GROUND_HEIGHT / 2 });
+const HUD_MARGIN = 24;
 
+/**
+ * Nivel esqueleto de la spec 002: solo valida la llegada desde World Screen,
+ * el punto de inicio de Mario y el estado inicial visible. El nivel real
+ * (suelo, cámara, bloques y enemigos) corresponde a la spec 012.
+ */
 export class Game extends Scene
 {
     constructor ()
@@ -11,96 +22,35 @@ export class Game extends Scene
         super('Game');
     }
 
-    preload ()
-    {
-        this.load.setPath('assets');
-
-        Object.values(TEXTURES).forEach((sheet) =>
-        {
-            this.load.spritesheet(sheet.key, sheet.file, {
-                frameWidth: sheet.frameWidth,
-                frameHeight: sheet.frameHeight
-            });
-        });
-    }
-
     create ()
     {
-        this.cameras.main.setBackgroundColor('#1d2b53');
+        const state = this.registry.get(GAME_STATE_KEY);
 
-        this.add.text(512, 80, 'SPEC 001 · Carga de assets', {
-            fontFamily: 'monospace', fontSize: 30, color: '#ffffff'
-        }).setOrigin(0.5);
+        this.cameras.main.setBackgroundColor(SKY_COLOR);
+        this.add.rectangle(512, GROUND_Y, 1024, GROUND_HEIGHT, GROUND_COLOR);
 
-        this.add.text(512, 124, 'Escena base de validación · escala ×4', {
-            fontFamily: 'monospace', fontSize: 18, color: '#a8d8ff'
-        }).setOrigin(0.5);
+        const mario = CHARACTERS.SMALL_MARIO;
 
-        this.add.text(330, 210, 'tiles · 18 × 18', {
-            fontFamily: 'monospace', fontSize: 20, color: '#ffffff'
-        }).setOrigin(0.5);
+        this.add.image(START_POINT.x, START_POINT.y, mario.texture, mario.frames[0])
+            .setOrigin(mario.origin.x, mario.origin.y)
+            .setScale(LEVEL_SCALE);
 
-        this.add.text(694, 210, 'characters · 24 × 24', {
-            fontFamily: 'monospace', fontSize: 20, color: '#ffffff'
-        }).setOrigin(0.5);
-
-        this.add.rectangle(512, PREVIEW_BASELINE, 720, 2, 0xffffff, 0.25);
-
-        this.#addTile(TILES.HARD_BLOCK, 250, 'hard block');
-        this.#addTile(TILES.QUESTION_BLOCK, 370, '? block');
-        this.#addCharacter(CHARACTERS.SMALL_MARIO, 620, 'small mario');
-        this.#addCharacter(CHARACTERS.GOOMBA, 750, 'goomba');
-
-        const report = this.#textureReport();
-
-        console.info('[assets]', report);
-
-        this.add.text(512, 640, report, {
-            fontFamily: 'monospace', fontSize: 20, color: '#9fe870', align: 'center'
-        }).setOrigin(0.5);
-
-        this.add.text(512, 700, 'pixelArt: nearest · sin antialias · escalas enteras', {
-            fontFamily: 'monospace', fontSize: 16, color: '#a8d8ff'
-        }).setOrigin(0.5);
+        this.#createHud(state);
     }
 
-    #addTile (tile, x, label)
+    #createHud (state)
     {
-        this.add.image(x, PREVIEW_BASELINE, tile.texture, tile.frame)
-            .setOrigin(0.5, 1)
-            .setScale(PREVIEW_SCALE);
+        const hud = [
+            `MARIO ${String(state.score).padStart(6, '0')}`,
+            `COINS ${String(state.coins).padStart(2, '0')}`,
+            `LIVES ${String(state.lives).padStart(2, '0')}`,
+            `WORLD ${state.world}`
+        ].join('   ');
 
-        this.add.text(x, PREVIEW_BASELINE + 24, label, {
-            fontFamily: 'monospace', fontSize: 16, color: '#ffffff'
-        }).setOrigin(0.5, 0);
-    }
-
-    #addCharacter (character, x, label)
-    {
-        this.add.image(x, PREVIEW_BASELINE, character.texture, character.frames[0])
-            .setOrigin(character.origin.x, character.origin.y)
-            .setScale(PREVIEW_SCALE);
-
-        this.add.text(x, PREVIEW_BASELINE + 24, label, {
-            fontFamily: 'monospace', fontSize: 16, color: '#ffffff'
-        }).setOrigin(0.5, 0);
-    }
-
-    #textureReport ()
-    {
-        return Object.values(TEXTURES).map((sheet) =>
-        {
-            const texture = this.textures.get(sheet.key);
-            const frames = texture.getFrameNames().length;
-            const image = texture.getSourceImage();
-            const status = frames === sheet.frameCount ? 'OK' : `ESPERADOS ${sheet.frameCount}`;
-
-            if (frames !== sheet.frameCount)
-            {
-                console.warn(`[assets] ${sheet.key}: se esperaban ${sheet.frameCount} frames y se cargaron ${frames}`);
-            }
-
-            return `${sheet.key}: ${frames}/${sheet.frameCount} frames · ${image.width}×${image.height} px · ${status}`;
-        }).join('   |   ');
+        this.add.text(HUD_MARGIN, HUD_MARGIN, hud, {
+            fontFamily: 'monospace',
+            fontSize: 20,
+            color: '#ffffff'
+        }).setScrollFactor(0);
     }
 }

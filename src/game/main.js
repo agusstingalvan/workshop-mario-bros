@@ -1,5 +1,8 @@
-import { Game as MainGame } from './scenes/Game';
 import { AUTO, Scale, Game } from 'phaser';
+import { Boot } from './scenes/Boot';
+import { MainMenu } from './scenes/MainMenu';
+import { WorldScreen } from './scenes/WorldScreen';
+import { Game as MainGame } from './scenes/Game';
 
 // Find out more information about the Game Config at:
 // https://docs.phaser.io/api-documentation/typedef/types-core#gameconfig
@@ -17,6 +20,9 @@ const config = {
         autoCenter: Scale.CENTER_BOTH
     },
     scene: [
+        Boot,
+        MainMenu,
+        WorldScreen,
         MainGame
     ]
 };

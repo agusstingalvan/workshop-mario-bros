@@ -45,6 +45,11 @@ El recorrido del juego (§12) empieza en un menú y pasa por una pantalla de mun
 - La World Screen no requiere assets nuevos.
 - **Tuning asumido**: la World Screen dura `2000 ms` antes de iniciar el nivel.
 - El botón «Jugar» responde tanto a mouse como a teclado.
+- Título: `SUPER MARIO BROS`; subtítulo: `Versión simplificada`.
+- Orden de escenas: `Boot → MainMenu → WorldScreen → Game` (nivel esqueleto).
+- La World Screen usa solo texto sobre fondo plano.
+- El HUD del nivel es un marcador mínimo de texto (`MARIO`, `COINS`, `LIVES`, `WORLD`) para cubrir el criterio de valores iniciales; la spec 013 lo reemplaza por el HUD definitivo.
+- El nivel esqueleto usa un suelo provisional y una escala de personaje provisional hasta que `012` defina el nivel.
 
 ## Acceptance criteria
 
@@ -70,6 +75,6 @@ El recorrido del juego (§12) empieza en un menú y pasa por una pantalla de mun
 
 ## Human approval
 
-- Status: draft
-- Approved by:
-- Date:
+- Status: approved
+- Approved by: aguss
+- Date: 2026-10-19
