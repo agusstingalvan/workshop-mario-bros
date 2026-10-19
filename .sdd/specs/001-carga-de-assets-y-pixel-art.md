@@ -75,6 +75,6 @@ Hoy el proyecto es la plantilla de Phaser: carga `bg.png` y `logo.png` y muestra
 
 ## Human approval
 
-- Status: draft
-- Approved by:
-- Date:
+- Status: approved
+- Approved by: aguss
+- Date: 2026-10-19
