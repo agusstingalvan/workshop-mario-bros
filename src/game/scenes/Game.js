@@ -1,22 +1,36 @@
 import { Scene } from 'phaser';
-import { CHARACTERS } from '../constants/assets.js';
+import { TILES, TILE_SEQUENCES } from '../constants/assets.js';
+import { Mario } from '../entities/Mario.js';
 import { GAME_STATE_KEY } from '../state/GameState.js';
 
 const SKY_COLOR = 0x5c94fc;
 const GROUND_COLOR = 0x8b5a2b;
-const GROUND_Y = 700;
-const GROUND_HEIGHT = 16;
-const LEVEL_SCALE = 2;
-const START_POINT = Object.freeze({ x: 120, y: GROUND_Y - GROUND_HEIGHT / 2 });
+const GROUND_TOP = 700;
+const GROUND_HEIGHT = 18;
+const PLATFORM_TOP = 620;
+const PLATFORM_LEFT = 860;
+const PLATFORM_TILES = 4;
+const WALL_X = 709;
+const WALL_ROWS = 3;
+const BLOCK_X = 650;
+const PIPE_X = 600;
+const MARIO_START = Object.freeze({ x: 896, y: 560 });
+const WORLD_WIDTH = 1024;
+const WORLD_HEIGHT = 768;
 const HUD_MARGIN = 24;
 
 /**
- * Nivel esqueleto de la spec 002: solo valida la llegada desde World Screen,
- * el punto de inicio de Mario y el estado inicial visible. El nivel real
- * (suelo, cámara, bloques y enemigos) corresponde a la spec 012.
+ * Nivel esqueleto de la spec 003. Incluye un escenario de prueba con suelo,
+ * plataforma, bloque, tubería y pared para verificar movimiento y colisiones.
+ * El nivel real de World 1-1 corresponde a la spec 012.
  */
 export class Game extends Scene
 {
+    #solids;
+    #mario;
+    #cursors;
+    #keys;
+
     constructor ()
     {
         super('Game');
@@ -27,15 +41,63 @@ export class Game extends Scene
         const state = this.registry.get(GAME_STATE_KEY);
 
         this.cameras.main.setBackgroundColor(SKY_COLOR);
-        this.add.rectangle(512, GROUND_Y, 1024, GROUND_HEIGHT, GROUND_COLOR);
+        this.physics.world.setBounds(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
 
-        const mario = CHARACTERS.SMALL_MARIO;
+        this.#createScaffold();
 
-        this.add.image(START_POINT.x, START_POINT.y, mario.texture, mario.frames[0])
-            .setOrigin(mario.origin.x, mario.origin.y)
-            .setScale(LEVEL_SCALE);
+        this.#mario = new Mario(this, MARIO_START.x, MARIO_START.y);
+        this.physics.add.collider(this.#mario, this.#solids);
+
+        this.#cursors = this.input.keyboard.createCursorKeys();
+        this.#keys = this.input.keyboard.addKeys({ left: 'A', right: 'D' });
 
         this.#createHud(state);
+    }
+
+    update (time, delta)
+    {
+        this.#mario.update({
+            left: this.#cursors.left.isDown || this.#keys.left.isDown,
+            right: this.#cursors.right.isDown || this.#keys.right.isDown
+        }, delta);
+    }
+
+    #createScaffold ()
+    {
+        this.#solids = this.physics.add.staticGroup();
+
+        const ground = this.add.rectangle(
+            WORLD_WIDTH / 2,
+            GROUND_TOP + GROUND_HEIGHT / 2,
+            WORLD_WIDTH,
+            GROUND_HEIGHT,
+            GROUND_COLOR
+        );
+
+        this.#solids.add(ground);
+
+        TILE_SEQUENCES.WOOD_PLATFORM.slice(0, PLATFORM_TILES).forEach((tile, index) =>
+        {
+            this.#addTile(
+                tile,
+                PLATFORM_LEFT + tile.rect.width / 2 + index * tile.rect.width,
+                PLATFORM_TOP + tile.rect.height / 2
+            );
+        });
+
+        for (let row = 0; row < WALL_ROWS; row++)
+        {
+            this.#addTile(TILES.HARD_BLOCK, WALL_X, GROUND_TOP - 9 - row * 18);
+        }
+
+        this.#addTile(TILES.HARD_BLOCK, BLOCK_X, GROUND_TOP - 9);
+        this.#addTile(TILES.PIPE_BODY, PIPE_X, GROUND_TOP - 9);
+        this.#addTile(TILES.PIPE_TOP, PIPE_X, GROUND_TOP - 27);
+    }
+
+    #addTile (tile, x, y)
+    {
+        this.#solids.create(x, y, tile.texture, tile.frame);
     }
 
     #createHud (state)

@@ -60,6 +60,9 @@ Caminar, caer y pararse sobre el escenario es la base de todo el juego. Sin movi
 - Entrada: flechas izquierda/derecha y `A`/`D`.
 - No hay multiplicador de carrera.
 - Mario no puede salir del mundo por los bordes laterales.
+- Se implementa con el tuning asumido; el ajuste fino queda para playtest humano.
+- No hay scroll vertical. El mundo provisional mide `1024 × 768` hasta que `012` defina el nivel.
+- El nivel esqueleto incluye un escenario de prueba (suelo, plataforma, bloque, tubería y pared) para verificar colisiones; `012` lo reemplaza.
 
 ## Acceptance criteria
 
@@ -85,6 +88,6 @@ Caminar, caer y pararse sobre el escenario es la base de todo el juego. Sin movi
 
 ## Human approval
 
-- Status: draft
-- Approved by:
-- Date:
+- Status: approved
+- Approved by: aguss
+- Date: 2026-10-19

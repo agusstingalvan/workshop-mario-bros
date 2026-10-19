@@ -99,3 +99,14 @@ export const CHARACTERS = Object.freeze({
     GOOMBA_FLATTENED: character({ frames: [18], hitbox: HITBOXES.GOOMBA }),
     PIRANHA_PLANT: character({ sheet: null, frames: [], hitbox: HITBOXES.PIRANHA_PLANT })
 });
+
+/** Animaciones de §2.4. Las que el pack no trae se resuelven con frame congelado. */
+export const ANIMATIONS = Object.freeze({
+    MARIO_WALK: Object.freeze({
+        key: 'mario_walk',
+        texture: CHARACTERS.SMALL_MARIO.texture,
+        frames: CHARACTERS.SMALL_MARIO.frames,
+        frameRate: 10,
+        repeat: -1
+    })
+});

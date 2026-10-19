@@ -1,5 +1,5 @@
 import { Scene } from 'phaser';
-import { TEXTURES } from '../constants/assets.js';
+import { ANIMATIONS, TEXTURES } from '../constants/assets.js';
 import { GAME_STATE_KEY, GameState } from '../state/GameState.js';
 
 /**
@@ -28,7 +28,26 @@ export class Boot extends Scene
 
     create ()
     {
+        this.#createAnimations();
         this.registry.set(GAME_STATE_KEY, new GameState());
         this.scene.start('MainMenu');
+    }
+
+    #createAnimations ()
+    {
+        Object.values(ANIMATIONS).forEach((animation) =>
+        {
+            if (this.anims.exists(animation.key))
+            {
+                return;
+            }
+
+            this.anims.create({
+                key: animation.key,
+                frames: this.anims.generateFrameNumbers(animation.texture, { frames: animation.frames }),
+                frameRate: animation.frameRate,
+                repeat: animation.repeat
+            });
+        });
     }
 }
