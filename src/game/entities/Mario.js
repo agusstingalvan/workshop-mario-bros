@@ -1,20 +1,36 @@
 import { Physics } from 'phaser';
 import { CHARACTERS } from '../constants/assets.js';
+import { MARIO_DAMAGE } from '../constants/damage.js';
 import { MARIO_MOVEMENT } from '../constants/movement.js';
 
 const WALK_ANIMATION_KEY = 'mario_walk';
 const WALK_ANIMATION_THRESHOLD = 5;
 
+export const MARIO_DAMAGED_EVENT = 'mario:damaged';
+
+const STATES = Object.freeze({
+    SMALL: 'small',
+    SUPER: 'super'
+});
+
+const STATE_ASSETS = Object.freeze({
+    [STATES.SMALL]: CHARACTERS.SMALL_MARIO,
+    [STATES.SUPER]: CHARACTERS.SUPER_MARIO
+});
+
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
 /**
- * Mario en estado Small. Concentra su cuerpo físico, movimiento y animación;
- * la escena solo le pasa las intenciones de input y lo colisiona con el nivel.
+ * Mario con máquina de estados Small/Super. Concentra cuerpo físico, movimiento,
+ * salto, animación, daño e invulnerabilidad. La escena solo le pasa el input y
+ * reacciona al evento de daño.
  */
 export class Mario extends Physics.Arcade.Sprite
 {
     #bufferMs = 0;
     #coyoteMs = 0;
+    #state = STATES.SMALL;
+    #invulnerableMs = 0;
 
     constructor (scene, x, y)
     {
@@ -25,19 +41,67 @@ export class Mario extends Physics.Arcade.Sprite
         scene.add.existing(this);
         scene.physics.add.existing(this);
 
-        const hitbox = data.hitbox;
-
         this.setOrigin(data.origin.x, data.origin.y);
-        this.body.setSize(hitbox.width, hitbox.height, false);
-        this.body.setOffset(
-            (data.rects[0].width - hitbox.width) / 2,
-            data.rects[0].height - hitbox.height
-        );
         this.setCollideWorldBounds(true);
         this.body.setMaxVelocity(MARIO_MOVEMENT.MAX_SPEED, MARIO_MOVEMENT.TERMINAL_VELOCITY);
         this.body.setGravityY(MARIO_MOVEMENT.GRAVITY_FALLING);
 
-        console.info(`[mario] hitbox ${this.body.width}×${this.body.height} · origen (${data.origin.x}, ${data.origin.y})`);
+        this.#applyState(STATES.SMALL);
+    }
+
+    get form ()
+    {
+        return this.#state;
+    }
+
+    get isSuper ()
+    {
+        return this.#state === STATES.SUPER;
+    }
+
+    /** Small → Super. Mantiene los pies en la misma posición. */
+    grow ()
+    {
+        if (this.#state === STATES.SUPER)
+        {
+            return false;
+        }
+
+        this.#applyState(STATES.SUPER);
+
+        return true;
+    }
+
+    /**
+     * Daño de enemigo. Super vuelve a Small con invulnerabilidad; Small emite
+     * daño fatal para que la escena descuente la vida.
+     * @returns {boolean} si el golpe fue aplicado.
+     */
+    takeDamage ()
+    {
+        if (this.#invulnerableMs > 0)
+        {
+            return false;
+        }
+
+        if (this.#state === STATES.SUPER)
+        {
+            this.#applyState(STATES.SMALL);
+            this.#invulnerableMs = MARIO_DAMAGE.INVULNERABILITY_MS;
+            this.emit(MARIO_DAMAGED_EVENT, { fatal: false });
+
+            return true;
+        }
+
+        this.emit(MARIO_DAMAGED_EVENT, { fatal: true });
+
+        return true;
+    }
+
+    /** Muerte directa (pozo): no otorga invulnerabilidad ni respeta la ventana. */
+    die ()
+    {
+        this.emit(MARIO_DAMAGED_EVENT, { fatal: true });
     }
 
     update (input, delta)
@@ -78,6 +142,27 @@ export class Mario extends Physics.Arcade.Sprite
         );
 
         this.#updateAnimation(onGround);
+        this.#updateInvulnerability(delta);
+    }
+
+    #applyState (state)
+    {
+        const data = STATE_ASSETS[state];
+        const scale = data.scale;
+        const sourceWidth = data.hitbox.width / scale;
+        const sourceHeight = data.hitbox.height / scale;
+        const frame = data.rects[0];
+
+        this.#state = state;
+        this.setScale(scale);
+        this.body.setSize(sourceWidth, sourceHeight, false);
+        this.body.setOffset(
+            (frame.width - sourceWidth) / 2,
+            frame.height - sourceHeight
+        );
+        this.body.updateFromGameObject();
+
+        console.info(`[mario] state ${state} · hitbox ${Math.round(this.body.width)}×${Math.round(this.body.height)} · escala ${scale}`);
     }
 
     #updateJump (onGround, jumpPressed, delta)
@@ -101,6 +186,26 @@ export class Mario extends Physics.Arcade.Sprite
         this.body.setVelocityY(MARIO_MOVEMENT.JUMP_VELOCITY);
         this.#bufferMs = 0;
         this.#coyoteMs = 0;
+    }
+
+    #updateInvulnerability (delta)
+    {
+        if (this.#invulnerableMs <= 0)
+        {
+            this.setAlpha(1);
+            return;
+        }
+
+        this.#invulnerableMs = Math.max(0, this.#invulnerableMs - delta);
+
+        const visible = Math.floor(this.#invulnerableMs / MARIO_DAMAGE.BLINK_PERIOD_MS) % 2 === 0;
+
+        this.setAlpha(visible ? 1 : MARIO_DAMAGE.BLINK_ALPHA);
+
+        if (this.#invulnerableMs === 0)
+        {
+            this.setAlpha(1);
+        }
     }
 
     #updateAnimation (onGround)

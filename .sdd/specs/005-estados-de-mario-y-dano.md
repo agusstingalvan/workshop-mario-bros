@@ -51,6 +51,10 @@ Los dos estados de Mario son el eje de progresión de la versión simplificada: 
 - La transformación debe mantener los pies de Mario en la misma posición para no atravesar el suelo.
 - El daño de pozo no otorga invulnerabilidad; es muerte directa con pérdida de vida.
 - La entidad no se muta desde fuera: el daño entra por un método público.
+- La hitbox de Super es efectiva `20 × 26`; el body se ajusta por la escala `1.5` del sprite (`36 × 36` visuales).
+- No hay animación ni pausa de muerte: el respawn es inmediato tras perder la vida.
+- Si Mario crece sin espacio vertical, se mantiene el crecimiento; el caso con bloques se resuelve en `006`/`012`.
+- Para verificar esta spec, el escenario esqueleto incluye un hongo y un peligro de prueba; `008`, `009` y `010` los reemplazan.
 
 ## Acceptance criteria
 
@@ -79,6 +83,6 @@ Los dos estados de Mario son el eje de progresión de la versión simplificada: 
 
 ## Human approval
 
-- Status: draft
-- Approved by:
-- Date:
+- Status: approved
+- Approved by: aguss
+- Date: 2026-10-19

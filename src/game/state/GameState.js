@@ -1,4 +1,5 @@
 export const GAME_STATE_KEY = 'gameState';
+export const GAME_OVER_EVENT = 'game-over';
 
 export const INITIAL_STATE = Object.freeze({
     lives: 3,
@@ -45,5 +46,16 @@ export class GameState
     get world ()
     {
         return this.#world;
+    }
+
+    /**
+     * Descuenta una vida sin tocar puntaje ni monedas (§8.2 y §11.4).
+     * @returns {number} vidas restantes, nunca menor que cero.
+     */
+    loseLife ()
+    {
+        this.#lives = Math.max(0, this.#lives - 1);
+
+        return this.#lives;
     }
 }
