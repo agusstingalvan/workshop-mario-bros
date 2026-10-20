@@ -13,6 +13,9 @@ const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
  */
 export class Mario extends Physics.Arcade.Sprite
 {
+    #bufferMs = 0;
+    #coyoteMs = 0;
+
     constructor (scene, x, y)
     {
         const data = CHARACTERS.SMALL_MARIO;
@@ -43,6 +46,8 @@ export class Mario extends Physics.Arcade.Sprite
         const body = this.body;
         const onGround = body.blocked.down || body.touching.down;
 
+        this.#updateJump(onGround, input.jumpPressed, delta);
+
         if (input.left !== input.right)
         {
             const direction = input.left ? -1 : 1;
@@ -72,11 +77,41 @@ export class Mario extends Physics.Arcade.Sprite
                 : MARIO_MOVEMENT.GRAVITY_FALLING
         );
 
-        this.#updateAnimation();
+        this.#updateAnimation(onGround);
     }
 
-    #updateAnimation ()
+    #updateJump (onGround, jumpPressed, delta)
     {
+        this.#coyoteMs = onGround
+            ? MARIO_MOVEMENT.COYOTE_TIME_MS
+            : Math.max(0, this.#coyoteMs - delta);
+
+        this.#bufferMs = jumpPressed
+            ? MARIO_MOVEMENT.JUMP_BUFFER_MS
+            : Math.max(0, this.#bufferMs - delta);
+
+        if (this.#bufferMs > 0 && (onGround || this.#coyoteMs > 0))
+        {
+            this.#jump();
+        }
+    }
+
+    #jump ()
+    {
+        this.body.setVelocityY(MARIO_MOVEMENT.JUMP_VELOCITY);
+        this.#bufferMs = 0;
+        this.#coyoteMs = 0;
+    }
+
+    #updateAnimation (onGround)
+    {
+        if (!onGround)
+        {
+            this.anims.stop();
+            this.setFrame(CHARACTERS.SMALL_MARIO.frames[1]);
+            return;
+        }
+
         const body = this.body;
         const blockedAhead = (body.velocity.x > 0 && body.blocked.right)
             || (body.velocity.x < 0 && body.blocked.left);

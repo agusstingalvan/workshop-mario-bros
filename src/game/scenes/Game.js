@@ -1,4 +1,4 @@
-import { Scene } from 'phaser';
+import { Input, Scene } from 'phaser';
 import { TILES, TILE_SEQUENCES } from '../constants/assets.js';
 import { Mario } from '../entities/Mario.js';
 import { GAME_STATE_KEY } from '../state/GameState.js';
@@ -7,14 +7,14 @@ const SKY_COLOR = 0x5c94fc;
 const GROUND_COLOR = 0x8b5a2b;
 const GROUND_TOP = 700;
 const GROUND_HEIGHT = 18;
-const PLATFORM_TOP = 620;
+const PLATFORM_TOP = 540;
 const PLATFORM_LEFT = 860;
 const PLATFORM_TILES = 4;
 const WALL_X = 709;
 const WALL_ROWS = 3;
 const BLOCK_X = 650;
 const PIPE_X = 600;
-const MARIO_START = Object.freeze({ x: 896, y: 560 });
+const MARIO_START = Object.freeze({ x: 896, y: 480 });
 const WORLD_WIDTH = 1024;
 const WORLD_HEIGHT = 768;
 const HUD_MARGIN = 24;
@@ -49,16 +49,21 @@ export class Game extends Scene
         this.physics.add.collider(this.#mario, this.#solids);
 
         this.#cursors = this.input.keyboard.createCursorKeys();
-        this.#keys = this.input.keyboard.addKeys({ left: 'A', right: 'D' });
+        this.#keys = this.input.keyboard.addKeys({ left: 'A', right: 'D', jump: 'W' });
 
         this.#createHud(state);
     }
 
     update (time, delta)
     {
+        const jumpPressed = Input.Keyboard.JustDown(this.#cursors.space)
+            || Input.Keyboard.JustDown(this.#cursors.up)
+            || Input.Keyboard.JustDown(this.#keys.jump);
+
         this.#mario.update({
             left: this.#cursors.left.isDown || this.#keys.left.isDown,
-            right: this.#cursors.right.isDown || this.#keys.right.isDown
+            right: this.#cursors.right.isDown || this.#keys.right.isDown,
+            jumpPressed
         }, delta);
     }
 

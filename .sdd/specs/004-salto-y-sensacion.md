@@ -54,6 +54,9 @@ El GDD pide explícitamente un salto «más cómodo y agradable» que el de un p
 - El coyote time solo aplica cuando Mario abandona una superficie sin saltar, no después de un salto.
 - El buffer no debe disparar dos saltos seguidos con una sola pulsación.
 - Las ventanas se miden en milisegundos y viven en constantes de tuning.
+- Se implementa sin salto variable: el GDD solo pide subida suave y caída rápida.
+- La altura de ≈3.7 tiles se mide en esta spec (≈66 px); su suficiencia contra el layout queda para `012`, que aún no tiene layout aprobado.
+- El playtest humano queda pendiente; la verificación automatizada cubre los casos de buffer y coyote.
 
 ## Acceptance criteria
 
@@ -79,6 +82,6 @@ El GDD pide explícitamente un salto «más cómodo y agradable» que el de un p
 
 ## Human approval
 
-- Status: draft
-- Approved by:
-- Date:
+- Status: approved
+- Approved by: aguss
+- Date: 2026-10-19
