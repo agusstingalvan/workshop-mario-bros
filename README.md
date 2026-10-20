@@ -1,4 +1,40 @@
-# Phaser Vite Template
+# Super Mario Bros · Pixel Platformer
+
+Juego de plataformas de un jugador implementado según [`docs/GDD.md`](docs/GDD.md), con Phaser 4 y los sprites de Kenney (CC0).
+
+## Jugar
+
+```bash
+npm ci
+npm run dev-nolog
+```
+
+Abrir `http://localhost:8080`. **Enter** o **Jugar** inicia la partida. Usar **← / →** o **A / D** para caminar y **Espacio / ↑ / W** para saltar.
+
+Recoger monedas (+100 puntos), golpear bloques desde abajo para liberar hongos y llegar a la bandera. Super Mario rompe ladrillos y resiste un golpe. Los Goombas se derrotan cayendo sobre ellos; las plantas deben esquivarse. Hay tres vidas: perder una reinicia el nivel, conservando puntos y monedas.
+
+## Organización
+
+- `src/game/config.js`: ajuste del movimiento, gravedad, tiempos y reglas.
+- `src/game/entities/`: jugador, bloques, hongos y enemigos; estados encapsulados y patrulla por composición.
+- `src/game/world/level.js`: distribución de World 1-1 en celdas de 18 px.
+- `src/game/scenes/`: carga, menú, presentación del mundo, nivel, HUD y resultado.
+- `src/game/Session.js`: puntaje, monedas y vidas; el HUD escucha sus eventos.
+- `assets/`: sprites originales importados por Vite; sin duplicarlos ni modificar sus frames.
+
+## Verificar
+
+`npm run build` genera `dist/`. En la consola del navegador, con el servidor de desarrollo abierto, ejecutar:
+
+```js
+await (await import('/tests/browser-playtest.js')).runPlaytest()
+```
+
+El playtest crea una instancia temporal e independiente y devuelve los controles aprobados o el primer fallo. Usa teclado y física real, con posiciones controladas para aislar interacciones. No sustituye recorrer manualmente el nivel para evaluar dificultad, cámara y sensación de salto. Ver [`docs/VERIFICATION.md`](docs/VERIFICATION.md).
+
+---
+
+## Documentación de la plantilla original
 
 This is a Phaser 4 project template that uses Vite for bundling. It supports hot-reloading for quick development workflow and includes scripts to generate production-ready builds.
 
