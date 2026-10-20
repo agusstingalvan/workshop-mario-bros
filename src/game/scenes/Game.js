@@ -1,5 +1,7 @@
 import { Input, Scene } from 'phaser';
-import { TILES, TILE_SEQUENCES } from '../constants/assets.js';
+import { TILES } from '../constants/assets.js';
+import { Coin, COIN_COLLECTED_EVENT } from '../entities/Coin.js';
+import { BLOCK_TYPES, createBlock } from '../entities/blocks/createBlock.js';
 import { Mario, MARIO_DAMAGED_EVENT } from '../entities/Mario.js';
 import { GAME_OVER_EVENT, GAME_STATE_KEY } from '../state/GameState.js';
 
@@ -7,27 +9,28 @@ const SKY_COLOR = 0x5c94fc;
 const GROUND_COLOR = 0x8b5a2b;
 const GROUND_TOP = 700;
 const GROUND_HEIGHT = 18;
-const PIT_LEFT = 300;
-const PIT_RIGHT = 360;
-const PIT_KILL_Y = 720;
-const PLATFORM_TOP = 540;
-const PLATFORM_LEFT = 860;
-const PLATFORM_TILES = 4;
-const MUSHROOM_X = 868;
-const HAZARD_X = 925;
-const MARIO_START = Object.freeze({ x: 896, y: 480 });
+const BLOCK_Y = 660;
+const BLOCK_XS = Object.freeze([300, 380, 460, 540]);
+const SIDE_BLOCK = Object.freeze({ x: 720, y: 690 });
+const TEST_MUSHROOM = Object.freeze({ x: 620, y: GROUND_TOP });
+const COIN_SPOTS = Object.freeze([
+    Object.freeze({ x: 350, y: 680 }),
+    Object.freeze({ x: 420, y: 680 }),
+    Object.freeze({ x: 490, y: 680 })
+]);
+const MARIO_START = Object.freeze({ x: 100, y: 640 });
 const WORLD_WIDTH = 1024;
 const WORLD_HEIGHT = 768;
 const HUD_MARGIN = 24;
 
 /**
- * Escenario esqueleto de la spec 005. Incluye plataforma, hongo y peligro de
- * prueba, y un pozo. El hongo y el peligro son andamiaje: los reemplazan 008,
- * 009 y 010; el suelo y el pozo los define 011/012.
+ * Escenario esqueleto de la spec 006: un bloque de cada tipo, un hongo de
+ * prueba y un bloque lateral. El layout real corresponde a la spec 012.
  */
 export class Game extends Scene
 {
     #solids;
+    #blocks;
     #mario;
     #cursors;
     #keys;
@@ -47,13 +50,23 @@ export class Game extends Scene
         this.cameras.main.setBackgroundColor(SKY_COLOR);
         this.physics.world.setBounds(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
 
-        this.#createScaffold();
+        this.#createGround();
+        this.#createBlocks();
 
         this.#mario = new Mario(this, MARIO_START.x, MARIO_START.y);
         this.#mario.on(MARIO_DAMAGED_EVENT, (payload) => this.#handleMarioDamaged(payload));
 
         this.physics.add.collider(this.#mario, this.#solids);
-        this.#createTestObjects();
+        this.physics.add.collider(this.#mario, this.#blocks, (mario, block) =>
+        {
+            if (mario.body.touching.up)
+            {
+                block.hit(mario);
+            }
+        });
+
+        this.#createMushroom(TEST_MUSHROOM.x, TEST_MUSHROOM.y);
+        this.#createCoins();
 
         this.#cursors = this.input.keyboard.createCursorKeys();
         this.#keys = this.input.keyboard.addKeys({ left: 'A', right: 'D', jump: 'W' });
@@ -68,12 +81,6 @@ export class Game extends Scene
             return;
         }
 
-        if (this.#mario.y > PIT_KILL_Y)
-        {
-            this.#mario.die();
-            return;
-        }
-
         const jumpPressed = Input.Keyboard.JustDown(this.#cursors.space)
             || Input.Keyboard.JustDown(this.#cursors.up)
             || Input.Keyboard.JustDown(this.#keys.jump);
@@ -85,42 +92,43 @@ export class Game extends Scene
         }, delta);
     }
 
-    #createScaffold ()
+    #createGround ()
     {
         this.#solids = this.physics.add.staticGroup();
-
-        this.#addGround(0, PIT_LEFT);
-        this.#addGround(PIT_RIGHT, WORLD_WIDTH);
-
-        TILE_SEQUENCES.WOOD_PLATFORM.slice(0, PLATFORM_TILES).forEach((tile, index) =>
-        {
-            this.#solids.create(
-                PLATFORM_LEFT + tile.rect.width / 2 + index * tile.rect.width,
-                PLATFORM_TOP + tile.rect.height / 2,
-                tile.texture,
-                tile.frame
-            );
-        });
-    }
-
-    #addGround (from, to)
-    {
-        const width = to - from;
-
         this.#solids.add(this.add.rectangle(
-            from + width / 2,
+            WORLD_WIDTH / 2,
             GROUND_TOP + GROUND_HEIGHT / 2,
-            width,
+            WORLD_WIDTH,
             GROUND_HEIGHT,
             GROUND_COLOR
         ));
     }
 
-    #createTestObjects ()
+    #createBlocks ()
+    {
+        this.#blocks = this.physics.add.staticGroup();
+
+        this.#addBlock(BLOCK_TYPES.HARD, BLOCK_XS[0], BLOCK_Y);
+        this.#addBlock(BLOCK_TYPES.BRICK, BLOCK_XS[1], BLOCK_Y);
+        this.#addBlock(BLOCK_TYPES.QUESTION, BLOCK_XS[2], BLOCK_Y);
+        this.#addBlock(BLOCK_TYPES.EMPTY, BLOCK_XS[3], BLOCK_Y);
+        this.#addBlock(BLOCK_TYPES.HARD, SIDE_BLOCK.x, SIDE_BLOCK.y);
+    }
+
+    #addBlock (type, x, y)
+    {
+        const block = createBlock(this, type, x, y, {
+            onRelease: (releaseX, releaseY) => this.#createMushroom(releaseX, releaseY)
+        });
+
+        this.#blocks.add(block);
+    }
+
+    #createMushroom (x, y)
     {
         const mushroom = TILES.SUPER_MUSHROOM;
 
-        const pickup = this.physics.add.staticImage(MUSHROOM_X, PLATFORM_TOP, mushroom.texture, mushroom.frame)
+        const pickup = this.physics.add.staticImage(x, y, mushroom.texture, mushroom.frame)
             .setOrigin(0.5, 1)
             .refreshBody();
 
@@ -129,11 +137,27 @@ export class Game extends Scene
             pickup.destroy();
             this.#mario.grow();
         });
+    }
 
-        const hazard = this.add.rectangle(HAZARD_X, PLATFORM_TOP - 9, 18, 18, 0xff3b30);
+    #createCoins ()
+    {
+        COIN_SPOTS.forEach(({ x, y }) =>
+        {
+            const coin = new Coin(this, x, y);
 
-        this.physics.add.existing(hazard, true);
-        this.physics.add.overlap(this.#mario, hazard, () => this.#mario.takeDamage());
+            coin.on(COIN_COLLECTED_EVENT, () => this.#collectCoin());
+            this.physics.add.overlap(this.#mario, coin, () => coin.collect());
+        });
+    }
+
+    #collectCoin ()
+    {
+        const state = this.registry.get(GAME_STATE_KEY);
+
+        state.addCoin();
+        this.#updateHud(state);
+
+        console.info(`[coin] collected · coins ${state.coins} · score ${state.score}`);
     }
 
     #handleMarioDamaged ({ fatal })

@@ -1,3 +1,5 @@
+import { COIN } from '../constants/coins.js';
+
 export const GAME_STATE_KEY = 'gameState';
 export const GAME_OVER_EVENT = 'game-over';
 
@@ -57,5 +59,14 @@ export class GameState
         this.#lives = Math.max(0, this.#lives - 1);
 
         return this.#lives;
+    }
+
+    /**
+     * Suma una moneda y sus puntos (§5.1 y §8.1).
+     */
+    addCoin ()
+    {
+        this.#coins += COIN.VALUE;
+        this.#score += COIN.SCORE;
     }
 }

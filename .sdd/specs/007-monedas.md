@@ -45,6 +45,8 @@ Las monedas son la recompensa inmediata del recorrido y la única fuente de punt
 - La recolección se resuelve por overlap, no por colisión física.
 - El puntaje y el contador son estado de partida, no de la entidad.
 - Una moneda no puede contarse dos veces aunque el overlap ocurra en frames consecutivos.
+- En el escenario de prueba las monedas flotan a la altura de la cabeza, en una fila de tres; el layout final lo define `012`.
+- El HUD mínimo existente se actualiza al recoger para poder evidenciar contadores; `013` lo reemplaza por el definitivo.
 
 ## Acceptance criteria
 
@@ -69,6 +71,6 @@ Las monedas son la recompensa inmediata del recorrido y la única fuente de punt
 
 ## Human approval
 
-- Status: draft
-- Approved by:
-- Date:
+- Status: approved
+- Approved by: aguss
+- Date: 2026-10-19

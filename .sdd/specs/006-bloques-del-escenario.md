@@ -54,6 +54,8 @@ Los bloques son la interacción central con el escenario: golpearlos desde abajo
 - Un ladrillo roto libera el espacio y Mario puede pasar.
 - El hongo aparece sobre el bloque, no dentro.
 - La rotura no otorga puntos: el GDD solo puntúa monedas.
+- El ? Block entrega siempre un Super Mushroom; no hay variante de monedas.
+- El escenario esqueleto incluye un bloque de cada tipo y un hongo de prueba; `012` reemplaza el layout.
 
 ## Acceptance criteria
 
@@ -79,6 +81,6 @@ Los bloques son la interacción central con el escenario: golpearlos desde abajo
 
 ## Human approval
 
-- Status: draft
-- Approved by:
-- Date:
+- Status: approved
+- Approved by: aguss
+- Date: 2026-10-19
