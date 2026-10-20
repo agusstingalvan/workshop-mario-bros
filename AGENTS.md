@@ -4,13 +4,9 @@
 
 - Inspeccionar el repositorio antes de proponer cambios. Nombrar archivos relevantes, convenciones y comandos de verificación.
 - Mantener los cambios pequeños y dentro del alcance aprobado. Pedir aprobación explícita en la conversación antes de borrar o migrar datos, publicar, instalar dependencias, cambiar configuración de entrega, acceder a secretos o usar operaciones Git destructivas.
-- Tratar planes, pruebas, builds, capturas y revisión humana como evidencia. No afirmar que un cambio funciona sin nombrar la evidencia.
+- No afirmar que un cambio funciona sin respaldo verificable: pruebas, build, capturas o revisión humana.
 - Preservar las convenciones existentes del proyecto. No reemplazar la configuración solo para facilitar una tarea.
-- Detenerse y explicar cuando los requisitos, criterios de aceptación o verificación sean ambiguos.
-
-## Reporte de cierre
-
-Informar archivos modificados, verificación realizada, evidencia obtenida, limitaciones y decisiones pendientes para revisión humana.
+- Detenerse y explicar cuando los requisitos o el alcance sean ambiguos.
 
 ## Stack tecnológico actual
 
@@ -24,7 +20,6 @@ Informar archivos modificados, verificación realizada, evidencia obtenida, limi
 | Estilos | CSS | `public/style.css` |
 | Assets | Kenney Pixel Platformer (CC0) | Spritesheets fuente en `assets/`, servidos desde `public/assets/` |
 | Diseño | `docs/GDD.md` | Fuente de verdad del gameplay |
-| Proceso | `.sdd/` | Specs, planes y evidencia |
 | Tests y lint | No configurados | La verificación actual es build + playtest manual |
 
 ### Estructura del proyecto
@@ -36,9 +31,8 @@ Informar archivos modificados, verificación realizada, evidencia obtenida, limi
 - `public/assets/`: assets estáticos servidos en runtime.
 - `assets/`: spritesheets fuente del juego.
 - `docs/GDD.md`: diseño del juego, assets, reglas y alcance.
-- `.sdd/`: specs, planes, evidencia y templates.
 
-Estado actual: plantilla base de Phaser. El alcance jugable (Mario, bloques, enemigos, HUD y pantallas) está especificado en el GDD y todavía no está implementado. No asumir que existe código que no esté en `src/`.
+Estado actual: plantilla base de Phaser. El alcance jugable (Mario, bloques, enemigos, HUD y pantallas) está definido en el GDD y todavía no está implementado. No asumir que existe código que no esté en `src/`.
 
 ### Comandos
 
@@ -49,27 +43,6 @@ Estado actual: plantilla base de Phaser. El alcance jugable (Mario, bloques, ene
 | `npm run dev-nolog` | Igual que `dev`, sin telemetría de la plantilla |
 | `npm run build` | Build de producción en `dist/` |
 | `npm run build-nolog` | Build de producción sin telemetría de la plantilla |
-
-## Metodología de trabajo SDD
-
-Todo cambio de comportamiento sigue este flujo:
-
-1. **Spec** (`sdd-spec`): definir problema y valor, comportamiento actual y esperado, referencia al GDD, alcance, no-alcance, restricciones, criterios de aceptación, evidencia esperada y preguntas abiertas. Copiar `.sdd/templates/spec.md` a `.sdd/specs/NNN-slug.md`. No escribir código todavía.
-2. **Aprobación humana**: la spec solo está aprobada cuando `Human approval` indica `approved`, con responsable y fecha. Sin aprobación no se crea el plan ni se implementa.
-3. **Plan** (`sdd-plan`): copiar `.sdd/templates/plan.md` a `.sdd/plans/NNN-slug.md`, vincular la spec aprobada, inspeccionar el repositorio y listar archivos, símbolos, pasos, verificación y condiciones de freno. No implementar durante el plan.
-4. **Implementación**: respetar el plan. Cualquier cambio de alcance exige volver a la spec.
-5. **Verificación** (`verify`): elegir la verificación más pequeña que cubra los criterios. Usar `npm run build` y playtest manual; no inventar resultados.
-6. **Evidencia**: copiar `.sdd/templates/evidence.md` a `.sdd/evidence/NNN-slug.md` con la tabla criterio → verificación → resultado, limitaciones y seguimiento.
-
-Reglas:
-
-- Usar el mismo identificador `NNN-slug` en spec, plan y evidencia, y enlazarlos entre sí.
-- Mantener specs, planes y evidencia junto al código; se revisan juntos.
-- No editar los templates para un cambio puntual.
-- Un cambio revisable = una spec.
-- Los cambios triviales sin impacto en comportamiento (typos, documentación) pueden omitir el ciclo; cualquier cambio de comportamiento requiere spec.
-- Si el GDD y el pedido difieren, detenerse y resolver la ambigüedad antes de codificar.
-- Skills locales disponibles: `.opencode/skills/sdd-spec`, `.opencode/skills/sdd-plan` y `.opencode/skills/verify`.
 
 ## Buenas prácticas de POO
 
@@ -104,7 +77,7 @@ Reglas:
 
 Reglas:
 
-- Elegir el patrón más simple que resuelva el problema y documentarlo en el plan.
+- Elegir el patrón más simple que resuelva el problema y documentarlo en el código o en el comentario del módulo.
 - No crear un framework interno ni abstracciones prematuras.
 - Los patrones deben reducir acoplamiento y facilitar el playtest, no ocultar el flujo.
 
@@ -112,4 +85,4 @@ Reglas:
 
 - `docs/GDD.md` manda en gameplay; `AGENTS.md` manda en ingeniería. Ante conflicto, preguntar antes de avanzar.
 - Usar los frames, rects y hitboxes documentados en el GDD §2; no inventar frames.
-- Antes de cerrar un cambio: ejecutar `npm run build` y hacer playtest manual de los criterios de aceptación. Registrar el resultado real; si algo no se puede verificar, declararlo explícitamente.
+- Antes de cerrar un cambio: ejecutar `npm run build` y hacer playtest manual de lo cambiado. Si algo no se pudo verificar, decirlo explícitamente.

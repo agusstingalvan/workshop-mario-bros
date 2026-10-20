@@ -1,22 +1,13 @@
 {
   "generator": "create-agent-ready-unraf",
   "version": "0.1.1",
-  "level": "sdd",
+  "level": "basic",
   "workshop": false,
   "additions": [],
   "files": [
     ".agent-ready/README.md",
     ".opencode/skills/repo-discovery/SKILL.md",
-    ".opencode/skills/sdd-plan/SKILL.md",
-    ".opencode/skills/sdd-spec/SKILL.md",
     ".opencode/skills/verify/SKILL.md",
-    ".sdd/README.md",
-    ".sdd/evidence/.gitkeep",
-    ".sdd/plans/.gitkeep",
-    ".sdd/specs/.gitkeep",
-    ".sdd/templates/evidence.md",
-    ".sdd/templates/plan.md",
-    ".sdd/templates/spec.md",
     "AGENTS.md"
   ]
 }
